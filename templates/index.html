@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - Check Email Validity</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.75);
+            border-radius: 12px;
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            border-color: #6366f1;
+        }
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-6">
+                <i class="fas fa-envelope-open-text text-3xl text-indigo-600"></i>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Email Verifier</h1>
+            <p class="text-xl text-gray-100 max-w-2xl mx-auto">
+                Verify email addresses instantly without sending any emails. Check validity, deliverability, and more.
+            </p>
+        </div>
+
+        <!-- Main Form -->
+        <div class="max-w-2xl mx-auto mb-16">
+            <div class="glass-effect p-8 shadow-2xl">
+                <form action="/verify" method="POST" class="space-y-6">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-at mr-2"></i>Email Address
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                            placeholder="Enter email address to verify (e.g., user@example.com)"
+                            class="input-focus w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 text-lg"
+                        >
+                    </div>
+                    <button
+                        type="submit"
+                        class="btn-hover w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 text-lg flex items-center justify-center"
+                    >
+                        <i class="fas fa-search mr-2"></i>
+                        Verify Email
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="max-w-6xl mx-auto mb-16">
+            <h2 class="text-3xl font-bold text-white text-center mb-12">What We Check</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Syntax Check -->
+                <div class="feature-card glass-effect p-6 text-center transition-transform duration-300">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Syntax Validation</h3>
+                    <p class="text-gray-600">Validates email format and structure according to RFC standards.</p>
+                </div>
+
+                <!-- Domain Check -->
+                <div class="feature-card glass-effect p-6 text-center transition-transform duration-300">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-globe text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Domain & MX Records</h3>
+                    <p class="text-gray-600">Checks if the domain exists and has valid mail exchange records.</p>
+                </div>
+
+                <!-- SMTP Check -->
+                <div class="feature-card glass-effect p-6 text-center transition-transform duration-300">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-server text-purple-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">SMTP Verification</h3>
+                    <p class="text-gray-600">Connects to mail server to verify if the mailbox actually exists.</p>
+                </div>
+
+                <!-- Disposable Check -->
+                <div class="feature-card glass-effect p-6 text-center transition-transform duration-300">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-trash text-red-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Disposable Detection</h3>
+                    <p class="text-gray-600">Identifies temporary and disposable email addresses.</p>
+                </div>
+
+                <!-- Role Account -->
+                <div class="feature-card glass-effect p-6 text-center transition-transform duration-300">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-user-tie text-yellow-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Role Account Check</h3>
+                    <p class="text-gray-600">Detects role-based emails like admin@, support@, info@.</p>
+                </div>
+
+                <!-- Free Provider -->
+                <div class="feature-card glass-effect p-6 text-center transition-transform duration-300">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-gift text-indigo-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Free Provider</h3>
+                    <p class="text-gray-600">Identifies if the email is from a free provider like Gmail, Yahoo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Section -->
+        <div class="max-w-4xl mx-auto">
+            <div class="glass-effect p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                    <i class="fas fa-code mr-2"></i>API Usage
+                </h2>
+                <p class="text-gray-600 mb-6 text-center">
+                    You can also use our API programmatically. Send a POST request to verify emails:
+                </p>
+                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                    <pre class="text-green-400 text-sm"><code>curl -X POST http://localhost:8080/api/verify \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com"}'</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-16 text-white opacity-75">
+            <p>&copy; 2024 Email Verifier. Built with Go and AfterShip Email Verifier.</p>
+        </footer>
+    </div>
+
+    <!-- Loading overlay for form submission -->
+    <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="glass-effect p-8 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+            <p class="text-gray-700 font-medium">Verifying email...</p>
+        </div>
+    </div>
+
+    <script>
+        // Show loading overlay on form submission
+        document.querySelector('form').addEventListener('submit', function() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('loading').classList.add('flex');
+        });
+
+        // Auto-focus email input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('email').focus();
+        });
+
+        // Example emails for demonstration
+        const examples = [
+            'user@example.com',
+            'test@gmail.com',
+            'admin@company.org',
+            'support@website.net'
+        ];
+
+        let exampleIndex = 0;
+        const emailInput = document.getElementById('email');
+
+        // Cycle through example emails as placeholder
+        setInterval(function() {
+            if (emailInput === document.activeElement || emailInput.value !== '') return;
+            emailInput.placeholder = `Enter email address to verify (e.g., ${examples[exampleIndex]})`;
+            exampleIndex = (exampleIndex + 1) % examples.length;
+        }, 3000);
+    </script>
+</body>
+</html>

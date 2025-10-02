@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.75);
+            border-radius: 12px;
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .status-valid {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .status-invalid {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        .status-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        .bounce-in {
+            animation: bounceIn 0.6s ease-out;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <a href="/" class="inline-flex items-center text-white hover:text-gray-200 mb-4 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Verifier
+            </a>
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Verification Results</h1>
+            <p class="text-gray-100">Here's what we found about your email address</p>
+        </div>
+
+        <!-- Email Address Display -->
+        <div class="max-w-4xl mx-auto mb-8">
+            <div class="glass-effect p-6 text-center bounce-in">
+                <div class="text-2xl font-mono text-gray-800 mb-2">{{.Email}}</div>
+                {{if .Error}}
+                    <div class="status-invalid text-white px-4 py-2 rounded-full inline-block">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        Error: {{.Error}}
+                    </div>
+                {{else if .IsValid}}
+                    <div class="status-valid text-white px-4 py-2 rounded-full inline-block">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Valid Email Format
+                    </div>
+                {{else}}
+                    <div class="status-invalid text-white px-4 py-2 rounded-full inline-block">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        Invalid Email Format
+                    </div>
+                {{end}}
+            </div>
+        </div>
+
+        {{if not .Error}}
+        <!-- Main Results Grid -->
+        <div class="max-w-6xl mx-auto mb-8">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Syntax Details -->
+                <div class="metric-card glass-effect p-6 transition-transform duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            <i class="fas fa-at text-indigo-600 mr-2"></i>
+                            Email Parts
+                        </h3>
+                    </div>
+                    <div class="space-y-3">
+                        {{if .Username}}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Username:</span>
+                            <span class="font-mono font-medium">{{.Username}}</span>
+                        </div>
+                        {{end}}
+                        {{if .Domain}}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Domain:</span>
+                            <span class="font-mono font-medium">{{.Domain}}</span>
+                        </div>
+                        {{end}}
+                    </div>
+                </div>
+
+                <!-- Reachability -->
+                <div class="metric-card glass-effect p-6 transition-transform duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            <i class="fas fa-satellite-dish text-green-600 mr-2"></i>
+                            Reachability
+                        </h3>
+                        {{if eq .Reachable "yes"}}
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-check mr-1"></i>Reachable
+                            </span>
+                        {{else if eq .Reachable "no"}}
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-times mr-1"></i>Not Reachable
+                            </span>
+                        {{else}}
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-question mr-1"></i>Unknown
+                            </span>
+                        {{end}}
+                    </div>
+                    <p class="text-gray-600 text-sm">
+                        {{if eq .Reachable "yes"}}
+                            The email server accepts messages for this address.
+                        {{else if eq .Reachable "no"}}
+                            The email server does not accept messages for this address.
+                        {{else}}
+                            Unable to determine if the server accepts messages.
+                        {{end}}
+                    </p>
+                </div>
+
+                <!-- MX Records -->
+                <div class="metric-card glass-effect p-6 transition-transform duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            <i class="fas fa-server text-blue-600 mr-2"></i>
+                            MX Records
+                        </h3>
+                        {{if .HasMxRecords}}
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-check mr-1"></i>Found
+                            </span>
+                        {{else}}
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-times mr-1"></i>Not Found
+                            </span>
+                        {{end}}
+                    </div>
+                    <p class="text-gray-600 text-sm">
+                        {{if .HasMxRecords}}
+                            Domain has valid mail exchange records configured.
+                        {{else}}
+                            Domain does not have mail exchange records.
+                        {{end}}
+                    </p>
+                </div>
+
+                <!-- Disposable Check -->
+                <div class="metric-card glass-effect p-6 transition-transform duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            <i class="fas fa-trash text-red-600 mr-2"></i>
+                            Disposable
+                        </h3>
+                        {{if .Disposable}}
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>Yes
+                            </span>
+                        {{else}}
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-check mr-1"></i>No
+                            </span>
+                        {{end}}
+                    </div>
+                    <p class="text-gray-600 text-sm">
+                        {{if .Disposable}}
+                            This appears to be a temporary/disposable email address.
+                        {{else}}
+                            This is not a known disposable email provider.
+                        {{end}}
+                    </p>
+                </div>
+
+                <!-- Role Account Check -->
+                <div class="metric-card glass-effect p-6 transition-transform duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            <i class="fas fa-user-tie text-purple-600 mr-2"></i>
+                            Role Account
+                        </h3>
+                        {{if .RoleAccount}}
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>Yes
+                            </span>
+                        {{else}}
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-check mr-1"></i>No
+                            </span>
+                        {{end}}
+                    </div>
+                    <p class="text-gray-600 text-sm">
+                        {{if .RoleAccount}}
+                            This appears to be a role-based email (admin, support, etc.).
+                        {{else}}
+                            This is not a role-based email address.
+                        {{end}}
+                    </p>
+                </div>
+
+                <!-- Free Provider Check -->
+                <div class="metric-card glass-effect p-6 transition-transform duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">
+                            <i class="fas fa-gift text-indigo-600 mr-2"></i>
+                            Free Provider
+                        </h3>
+                        {{if .Free}}
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-info-circle mr-1"></i>Yes
+                            </span>
+                        {{else}}
+                            <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-building mr-1"></i>No
+                            </span>
+                        {{end}}
+                    </div>
+                    <p class="text-gray-600 text-sm">
+                        {{if .Free}}
+                            This email is from a free email provider (Gmail, Yahoo, etc.).
+                        {{else}}
+                            This email is from a private/business domain.
+                        {{end}}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SMTP Details -->
+        {{if .SMTPDetails}}
+        <div class="max-w-4xl mx-auto mb-8">
+            <div class="glass-effect p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-envelope-open text-green-600 mr-3"></i>
+                    SMTP Server Details
+                </h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="flex items-center justify-between p-3 bg-white bg-opacity-50 rounded-lg">
+                        <span class="text-gray-700">Host Exists:</span>
+                        {{if .SMTPDetails.HostExists}}
+                            <span class="text-green-600 font-medium"><i class="fas fa-check mr-1"></i>Yes</span>
+                        {{else}}
+                            <span class="text-red-600 font-medium"><i class="fas fa-times mr-1"></i>No</span>
+                        {{end}}
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white bg-opacity-50 rounded-lg">
+                        <span class="text-gray-700">Deliverable:</span>
+                        {{if .SMTPDetails.Deliverable}}
+                            <span class="text-green-600 font-medium"><i class="fas fa-check mr-1"></i>Yes</span>
+                        {{else}}
+                            <span class="text-red-600 font-medium"><i class="fas fa-times mr-1"></i>No</span>
+                        {{end}}
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white bg-opacity-50 rounded-lg">
+                        <span class="text-gray-700">Full Inbox:</span>
+                        {{if .SMTPDetails.FullInbox}}
+                            <span class="text-red-600 font-medium"><i class="fas fa-exclamation-triangle mr-1"></i>Yes</span>
+                        {{else}}
+                            <span class="text-green-600 font-medium"><i class="fas fa-check mr-1"></i>No</span>
+                        {{end}}
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white bg-opacity-50 rounded-lg">
+                        <span class="text-gray-700">Catch All:</span>
+                        {{if .SMTPDetails.CatchAll}}
+                            <span class="text-yellow-600 font-medium"><i class="fas fa-info-circle mr-1"></i>Yes</span>
+                        {{else}}
+                            <span class="text-gray-600 font-medium"><i class="fas fa-minus mr-1"></i>No</span>
+                        {{end}}
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white bg-opacity-50 rounded-lg">
+                        <span class="text-gray-700">Disabled:</span>
+                        {{if .SMTPDetails.Disabled}}
+                            <span class="text-red-600 font-medium"><i class="fas fa-ban mr-1"></i>Yes</span>
+                        {{else}}
+                            <span class="text-green-600 font-medium"><i class="fas fa-check mr-1"></i>No</span>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{end}}
+
+        <!-- Domain Suggestion -->
+        {{if .Suggestion}}
+        <div class="max-w-4xl mx-auto mb-8">
+            <div class="glass-effect p-6 border-l-4 border-yellow-500">
+                <div class="flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-600 text-xl mr-3"></i>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">Did you mean?</h3>
+                        <p class="text-gray-600 mb-2">We detected a possible typo in the domain name.</p>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-gray-500">Suggested:</span>
+                            <span class="font-mono bg-yellow-100 px-3 py-1 rounded-lg text-yellow-800 font-medium">
+                                {{.Username}}@{{.Suggestion}}
+                            </span>
+                            <a href="/?email={{.Username}}@{{.Suggestion}}"
+                               class="text-indigo-600 hover:text-indigo-800 font-medium text-sm">
+                                <i class="fas fa-redo mr-1"></i>Try this instead
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{end}}
+        {{end}}
+
+        <!-- Actions -->
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="glass-effect p-6">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors inline-flex items-center justify-center">
+                        <i class="fas fa-search mr-2"></i>
+                        Verify Another Email
+                    </a>
+                    <button onclick="copyResults()" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors inline-flex items-center justify-center">
+                        <i class="fas fa-copy mr-2"></i>
+                        Copy Results
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-12 text-white opacity-75">
+            <p>&copy; 2024 Email Verifier. Built with Go and AfterShip Email Verifier.</p>
+        </footer>
+    </div>
+
+    <script>
+        function copyResults() {
+            const results = {
+                email: "{{.Email}}",
+                valid: {{.IsValid}},
+                reachable: "{{.Reachable}}",
+                disposable: {{.Disposable}},
+                roleAccount: {{.RoleAccount}},
+                free: {{.Free}},
+                hasMxRecords: {{.HasMxRecords}},
+                {{if .Suggestion}}suggestion: "{{.Suggestion}}",{{end}}
+                {{if .Error}}error: "{{.Error}}",{{end}}
+                {{if .SMTPDetails}}
+                smtp: {
+                    hostExists: {{.SMTPDetails.HostExists}},
+                    deliverable: {{.SMTPDetails.Deliverable}},
+                    fullInbox: {{.SMTPDetails.FullInbox}},
+                    catchAll: {{.SMTPDetails.CatchAll}},
+                    disabled: {{.SMTPDetails.Disabled}}
+                }
+                {{end}}
+            };
+
+            navigator.clipboard.writeText(JSON.stringify(results, null, 2)).then(function() {
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>Copied!';
+                setTimeout(function() {
+                    button.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+
+        // Add animation to cards on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.metric-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.5s ease';
+
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -33,7 +33,7 @@ COPY --from=builder /app/main /main
 
 # Copy templates and static files
 COPY --from=builder /app/templates /templates
-COPY --from=builder /app/static /static
+COPY --from=builder /app/static/ /static/
 
 # Expose port
 EXPOSE 8080

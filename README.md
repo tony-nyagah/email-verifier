@@ -46,6 +46,44 @@ go run main.go
 http://localhost:8080
 ```
 
+## 🐳 Docker / GitHub Container Registry
+
+The application is automatically built and published to GitHub Container Registry (GHCR) via GitHub Actions.
+
+### Using Pre-built Docker Images
+
+```bash
+# Pull the latest image
+docker pull ghcr.io/yourusername/email-verifier:latest
+
+# Run the container
+docker run -p 8080:8080 ghcr.io/yourusername/email-verifier:latest
+
+# Run with custom port
+docker run -p 3000:8080 -e PORT=8080 ghcr.io/yourusername/email-verifier:latest
+```
+
+### Available Tags
+
+- `latest` - Latest build from main branch
+- `main` - Same as latest
+- `v1.0.0` - Specific version tags
+- `sha-abc1234` - Specific commit builds
+
+### Docker Compose
+
+```yaml
+version: '3.8'
+services:
+  email-verifier:
+    image: ghcr.io/yourusername/email-verifier:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+    restart: unless-stopped
+```
+
 ## Usage
 
 ### Web Interface
@@ -130,6 +168,29 @@ curl -X POST http://localhost:8080/api/verify \
 - Detects common typos in domain names
 - Suggests corrections (gmail.com instead of gmai.com)
 - Improves data quality
+
+## 🚀 GitHub Actions CI/CD
+
+This repository includes a GitHub Actions workflow that:
+
+- ✅ Runs tests on every push and pull request
+- 🐳 Builds multi-architecture Docker images (AMD64 + ARM64)
+- 📦 Publishes to GitHub Container Registry automatically
+- 🏷️ Tags images based on git branches and tags
+- ⚡ Uses build caching for faster builds
+
+### Triggering Builds
+
+- **Push to main**: Creates `latest` and `main` tags
+- **Create tag**: `git tag v1.0.0 && git push origin v1.0.0` creates versioned tags
+- **Pull requests**: Builds images for testing (not published)
+
+### Setting Up Your Repository
+
+1. Fork or create this repository on GitHub
+2. Enable GitHub Actions (enabled by default)
+3. Ensure repository has "Read and write permissions" for Actions
+4. Push code - the workflow will automatically build and publish images
 
 ## Configuration
 

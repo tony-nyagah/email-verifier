@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	emailverifier "github.com/AfterShip/email-verifier"
@@ -44,6 +46,26 @@ func init() {
 }
 
 func main() {
+	// Parse command line flags
+	healthCheck := flag.Bool("health-check", false, "Run health check and exit")
+	port := flag.String("port", "8080", "Port to run the server on")
+	flag.Parse()
+
+	// Handle health check
+	if *healthCheck {
+		if err := performHealthCheck(*port); err != nil {
+			fmt.Printf("Health check failed: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("Health check passed")
+		os.Exit(0)
+	}
+
+	// Get port from environment variable if set
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		*port = envPort
+	}
+
 	// Serve static files
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
@@ -51,9 +73,32 @@ func main() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/verify", verifyHandler)
 	http.HandleFunc("/api/verify", apiVerifyHandler)
+	http.HandleFunc("/health", healthHandler)
 
-	fmt.Println("🚀 Email Verifier Server starting on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Printf("🚀 Email Verifier Server starting on http://localhost:%s\n", *port)
+	log.Fatal(http.ListenAndServe(":"+*port, nil))
+}
+
+func performHealthCheck(port string) error {
+	resp, err := http.Get("http://localhost:" + port + "/health")
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("health check returned status %d", resp.StatusCode)
+	}
+	return nil
+}
+
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "healthy",
+		"service": "email-verifier",
+	})
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {

@@ -1,4 +1,5 @@
 # Email Verifier Makefile
+# Requires Go 1.22+
 
 # Variables
 APP_NAME = email-verifier

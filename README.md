@@ -31,17 +31,22 @@ git clone <repository-url>
 cd email-verifier
 ```
 
-2. Install dependencies:
+2. Ensure you have Go 1.22+ installed:
+```bash
+go version
+```
+
+3. Install dependencies:
 ```bash
 go mod tidy
 ```
 
-3. Run the application:
+4. Run the application:
 ```bash
 go run main.go
 ```
 
-4. Open your browser and navigate to:
+5. Open your browser and navigate to:
 ```
 http://localhost:8080
 ```
@@ -246,6 +251,7 @@ email-verifier/
 
 ## Dependencies
 
+- Go 1.22+ - Required for building and running
 - [AfterShip Email Verifier](https://github.com/AfterShip/email-verifier) - Core email verification library
 - Go standard library for HTTP server and templating
 - [Tailwind CSS](https://tailwindcss.com/) (CDN) - Styling

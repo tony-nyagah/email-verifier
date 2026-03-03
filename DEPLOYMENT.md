@@ -120,7 +120,7 @@ docker pull ghcr.io/yourusername/email-verifier:latest
 # Run container
 docker run -d \
   --name email-verifier \
-  -p 8080:8080 \
+  -p 8081:8081 \
   --restart unless-stopped \
   ghcr.io/yourusername/email-verifier:latest
 ```
@@ -136,9 +136,9 @@ services:
     image: ghcr.io/yourusername/email-verifier:latest
     container_name: email-verifier
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
-      - PORT=8080
+      - PORT=8081
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "/main", "--health-check"]
@@ -178,10 +178,10 @@ spec:
       - name: email-verifier
         image: ghcr.io/yourusername/email-verifier:latest
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
         env:
         - name: PORT
-          value: "8080"
+          value: "8081"
         livenessProbe:
           exec:
             command: ["/main", "--health-check"]
@@ -210,7 +210,7 @@ spec:
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 8080
+    targetPort: 8081
   type: LoadBalancer
 ```
 
@@ -230,7 +230,7 @@ gcloud run deploy email-verifier \
   --platform managed \
   --region us-central1 \
   --allow-unauthenticated \
-  --port 8080
+  --port 8081
 ```
 
 #### AWS ECS/Fargate
@@ -246,7 +246,7 @@ aws ecs register-task-definition \
   --container-definitions '[{
     "name": "email-verifier",
     "image": "ghcr.io/yourusername/email-verifier:latest",
-    "portMappings": [{"containerPort": 8080}],
+    "portMappings": [{"containerPort": 8081}],
     "essential": true
   }]'
 ```
@@ -260,7 +260,7 @@ az container create \
   --name email-verifier \
   --image ghcr.io/yourusername/email-verifier:latest \
   --dns-name-label email-verifier-unique \
-  --ports 8080
+  --ports 8081
 ```
 
 ## 🔄 CI/CD Workflow
@@ -329,7 +329,7 @@ The application provides a health check endpoint:
 
 ```bash
 # Check application health
-curl http://localhost:8080/health
+curl http://localhost:8081/health
 
 # Response:
 {

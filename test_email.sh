@@ -5,7 +5,7 @@
 
 # Default values
 DEFAULT_EMAIL="test@gmail.com"
-DEFAULT_PORT="8080"
+DEFAULT_PORT="8081"
 
 # Use provided arguments or defaults
 EMAIL=${1:-$DEFAULT_EMAIL}
@@ -190,6 +190,6 @@ fi
 echo -e "${BLUE}💻 Usage examples:${NC}"
 echo -e "  ./test_email.sh                           # Test default email"
 echo -e "  ./test_email.sh user@example.com          # Test specific email"
-echo -e "  ./test_email.sh user@example.com 8080     # Test with custom port"
+echo -e "  ./test_email.sh user@example.com 8081     # Test with custom port"
 echo ""
 echo -e "${BLUE}🌐 Web interface:${NC} http://localhost:${PORT}"

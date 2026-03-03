@@ -48,7 +48,7 @@ func init() {
 func main() {
 	// Parse command line flags
 	healthCheck := flag.Bool("health-check", false, "Run health check and exit")
-	port := flag.String("port", "8080", "Port to run the server on")
+	port := flag.String("port", "8081", "Port to run the server on")
 	flag.Parse()
 
 	// Handle health check

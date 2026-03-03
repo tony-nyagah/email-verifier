@@ -36,7 +36,7 @@ COPY --from=builder /app/templates /templates
 COPY --from=builder /app/static/ /static/
 
 # Expose port
-EXPOSE 8080
+EXPOSE 8081
 
 # Health check (for systems that support it)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

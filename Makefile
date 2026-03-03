@@ -4,7 +4,7 @@
 # Variables
 APP_NAME = email-verifier
 BINARY_NAME = main
-PORT = 8080
+PORT = 8081
 
 # Go parameters
 GOCMD = go

@@ -1,6 +1,7 @@
+version: "3.8"
+
 services:
   email-verifier:
-    container_name: email-verifier
     build: .
     ports:
       - "8081:8081"

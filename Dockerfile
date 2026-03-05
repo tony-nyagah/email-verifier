@@ -1,6 +1,9 @@
 # Build stage
 FROM golang:1.22-alpine AS builder
 
+# Required for multi-arch builds
+ARG TARGETARCH
+
 # Install git and ca-certificates
 RUN apk add --no-cache git ca-certificates
 
@@ -17,7 +20,7 @@ RUN go mod download
 COPY . .
 
 # Build the application with optimizations
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH:-amd64} go build \
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH go build \
     -ldflags="-w -s -extldflags '-static'" \
     -a -installsuffix cgo \
     -o main .

@@ -14,33 +14,23 @@ import (
 )
 
 type EmailResult struct {
-	Email        string    `json:"email"`
-	IsValid      bool      `json:"is_valid"`
-	Reachable    string    `json:"reachable"`
-	Disposable   bool      `json:"disposable"`
-	RoleAccount  bool      `json:"role_account"`
-	Free         bool      `json:"free"`
-	HasMxRecords bool      `json:"has_mx_records"`
-	Suggestion   string    `json:"suggestion,omitempty"`
-	Error        string    `json:"error,omitempty"`
-	Username     string    `json:"username,omitempty"`
-	Domain       string    `json:"domain,omitempty"`
-	SMTPDetails  *SMTPInfo `json:"smtp_details,omitempty"`
-}
+	Email   string `json:"email"`
+	IsValid bool   `json:"is_valid"`
 
-type SMTPInfo struct {
-	HostExists  bool `json:"host_exists"`
-	FullInbox   bool `json:"full_inbox"`
-	CatchAll    bool `json:"catch_all"`
-	Deliverable bool `json:"deliverable"`
-	Disabled    bool `json:"disabled"`
+	Disposable   bool   `json:"disposable"`
+	RoleAccount  bool   `json:"role_account"`
+	Free         bool   `json:"free"`
+	HasMxRecords bool   `json:"has_mx_records"`
+	Suggestion   string `json:"suggestion,omitempty"`
+	Error        string `json:"error,omitempty"`
+	Username     string `json:"username,omitempty"`
+	Domain       string `json:"domain,omitempty"`
 }
 
 var verifier *emailverifier.Verifier
 
 func init() {
 	verifier = emailverifier.NewVerifier().
-		EnableSMTPCheck().
 		EnableDomainSuggest().
 		EnableAutoUpdateDisposable()
 }
@@ -180,23 +170,11 @@ func verifyEmail(email string) *EmailResult {
 	}
 
 	// Map results
-	result.Reachable = verifyResult.Reachable
 	result.Disposable = verifyResult.Disposable
 	result.RoleAccount = verifyResult.RoleAccount
 	result.Free = verifyResult.Free
 	result.HasMxRecords = verifyResult.HasMxRecords
 	result.Suggestion = verifyResult.Suggestion
-
-	// Map SMTP details if available
-	if verifyResult.SMTP != nil {
-		result.SMTPDetails = &SMTPInfo{
-			HostExists:  verifyResult.SMTP.HostExists,
-			FullInbox:   verifyResult.SMTP.FullInbox,
-			CatchAll:    verifyResult.SMTP.CatchAll,
-			Deliverable: verifyResult.SMTP.Deliverable,
-			Disabled:    verifyResult.SMTP.Disabled,
-		}
-	}
 
 	return result
 }
